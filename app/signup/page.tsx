@@ -38,6 +38,17 @@ export default function SignupPage() {
       return;
     }
 
+    // The account exists either way; sessionCreated is false only when the
+    // BFF's automatic login after signup failed (see api/auth/signup).
+    const { sessionCreated } = (await response.json().catch(() => ({}))) as {
+      sessionCreated?: boolean;
+    };
+    if (sessionCreated === false) {
+      toast.success("Account created — please log in to continue");
+      router.push("/login");
+      return;
+    }
+
     toast.success("Account created");
     router.push("/dashboard");
     router.refresh();
